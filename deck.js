@@ -18,7 +18,7 @@ const vidItem = (m, dir, prompt, o = {}) => ({ kind: 'vid', src: `${A}${dir}/${m
 function media(it) {
   const inner = it.refused ? `<div class="refused"><b>거부됨</b>${esc(it.refused)}</div>`
     : it.kind === 'vid' ? `<video data-src="${it.src}" muted loop playsinline preload="none"></video>`
-    : `<img src="${it.src}" alt="${esc(it.name)}" loading="lazy">`;
+    : `<img src="${it.src}" alt="${esc(it.name)}">`;
   return `<div class="media">${it.pick ? '<span class="tag">추천</span>' : ''}${it.tag ? `<span class="tag dark">${esc(it.tag)}</span>` : ''}${inner}<span class="zoom">크게 보기</span></div>`;
 }
 const plain = (it, cls = '', extra = '') => { const i = reg(it); return `<button class="card ${cls} ${it.pick ? 'pick' : ''}" data-i="${i}">${media(it)}${extra}</button>`; };
@@ -239,7 +239,8 @@ slide('만든 기록', '정리', '', () => {
 
 // ── 화면에 올리기
 const stage = $('#stage');
-stage.innerHTML = slides.map((s, n) => `<section class="slide ${s.cls}" data-n="${n + 1}">${s.html}</section>`).join('') +
+// 그림은 그 쪽에 들어갈 때(앞뒤 한 쪽 포함) 불러온다
+stage.innerHTML = slides.map((s, n) => `<section class="slide ${s.cls}" data-n="${n + 1}">${s.html.replace(/<img src="/g, '<img data-src="')}</section>`).join('') +
   `<div class="bar"></div><div class="foot"><span class="where"></span><span class="grow"></span><button class="nav" data-prev title="이전">◀</button><span class="num"></span><button class="nav" data-next title="다음">▶</button><button class="btn ghost" data-toc>목차</button><button class="btn ghost" data-full>전체 화면</button></div><div class="toast"></div>`;
 const els = $$('.slide', stage);
 let now = 0;
@@ -254,7 +255,10 @@ function playVideos(root, on) {
 }
 function go(n, push = true) {
   n = Math.max(1, Math.min(slides.length, n));
-  els.forEach((e, i) => { const on = i === n - 1; e.classList.toggle('active', on); playVideos(e, on); });
+  els.forEach((e, i) => {
+    const on = i === n - 1; e.classList.toggle('active', on); playVideos(e, on);
+    if (Math.abs(i - (n - 1)) <= 1) $$('img[data-src]', e).forEach(im => { im.src = im.dataset.src; im.removeAttribute('data-src'); });
+  });
   now = n;
   $('.foot .where').innerHTML = `${esc(slides[n - 1].group)} · <b>${slides[n - 1].title.replace(/<[^>]+>/g, '')}</b>`;
   $('.foot .num').textContent = `${n} / ${slides.length}`;

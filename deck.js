@@ -36,11 +36,11 @@ slide('표지', '시작', 'cover', () => {
   const c = { kind: 'vid', src: `${A}p3/t04-kling40.mp4`, name: '모션 타이포' };
   const tile = (it, go, k, t) => `<button class="card" data-go="${go}">${media(it)}<span class="cap">${t}<small>${k}</small></span></button>`;
   return `<div class="wrap"><div>
-    <span class="pill">힉스필드 모델 샘플러 <b>20장</b></span>
+    <span class="pill">힉스필드 모델 샘플러 <b>{{n}}장</b></span>
     <h1 style="margin-top:22px">같은 조건,<br><em>다른 모델</em></h1>
     <p class="sub">프롬프트는 그대로 두고 <b>모델만 바꿔</b> 나란히 놓았어요. 동화책 삽화, 졸업식 인트로, 모션 타이포 세 가지를 이미지 모델 16종과 영상 모델 12종으로 직접 만들어 봤어요.</p>
     <div class="cta"><button class="btn primary big" data-go="2">샘플러 보기</button><button class="btn ghost" style="height:40px" data-toc>목차</button><span class="chip">2026. 11. 21. 직접 생성</span></div>
-  </div><div class="tiles">${tile(a, 3, '1부 · 이미지 모델 16종', '동화책 삽화')}${tile(b, 9, '2부 · 영상 모델 12종', '졸업식 인트로')}${tile(c, 14, '3부 · 영상 모델 12종', '모션 타이포')}</div></div>`;
+  </div><div class="tiles">${tile(a, '1부', '1부 · 이미지 모델 16종', '동화책 삽화')}${tile(b, '2부', '2부 · 영상 모델 12종', '졸업식 인트로')}${tile(c, '3부', '3부 · 영상 모델 12종', '모션 타이포')}</div></div>`;
 });
 
 // ── 2 읽는 법
@@ -53,9 +53,9 @@ slide('샘플러 읽는 법', '시작', '', () => {
     <div class="tile"><div class="n">03</div><h3>눌러서 크게 봐요</h3><p>그림과 영상은 모두 <b>누르면 크게</b> 열려요. 옆에 넣은 프롬프트가 함께 나오고 <b>복사</b>할 수 있어요.</p></div>
   </div>
   <div class="jump">
-    ${j(3, `${A}p1/m04-gpt26.jpg`, 'img', '1부 · 3–8쪽', '동화책 삽화', '어린 왕자 한 장면을 이미지 모델 16종, 그림체 8종, 이어지는 4쪽으로.')}
-    ${j(9, `${A}p2/start-nano.jpg`, 'img', '2부 · 9–13쪽', '졸업식 인트로', '칠판 사진 한 장을 영상 모델 12종으로 움직이고, 인트로 컨셉 4가지를 더했어요.')}
-    ${j(14, `${A}p3/end-ideogram.jpg`, 'img', '3부 · 14–17쪽', '모션 타이포', '교권 보호 문구가 움직이는 영상을 12종으로. 글자를 정확히 맞추는 방법까지.')}
+    ${j('1부', `${A}p1/m04-gpt26.jpg`, 'img', '1부 · {{r:1부 동화책 삽화}}쪽', '동화책 삽화', '어린 왕자 한 장면을 이미지 모델 16종, 그림체 8종, 이어지는 4쪽으로.')}
+    ${j('2부', `${A}p2/start-nano.jpg`, 'img', '2부 · {{r:2부 졸업식 인트로}}쪽', '졸업식 인트로', '칠판 사진 한 장을 영상 모델 12종으로 움직이고, 인트로 컨셉 4가지와 이스터에그를 더했어요.')}
+    ${j('3부', `${A}p3/end-ideogram.jpg`, 'img', '3부 · {{r:3부 모션 타이포}}쪽', '모션 타이포', '교권 보호 문구가 움직이는 영상을 12종으로. 글자를 정확히 맞추는 방법까지.')}
   </div></div>`;
 });
 
@@ -150,7 +150,80 @@ slide('인트로 컨셉 4가지', '2부 졸업식 인트로', '', () => {
     <div class="grid-vid two">${cards}</div></div></div>`;
 });
 
-// ── 14 3부 표지
+// ── 이스터에그 7쪽: 1부의 어린 왕자를 2부 졸업식에 데려오기 (그림책 버전 + 콜라주 버전)
+const G2 = '2부 졸업식 인트로', EGGP = '2부 · 이스터에그';
+const shotItem = (list, n) => { const s = list[n]; return { kind: 'img', src: `${A}p2/${s.img}.jpg`, name: `장면 ${n + 1} · ${s.name}`, by: 'GPT Image 2.6 · 1부 주인공을 참고 이미지로', chips: [cr(1), '16:9 · 품질 중간', s.t], note: s.story, use: `카메라: ${s.cam}`, prompt: s.prompt, tag: s.t }; };
+const eggPlane = () => ({ kind: 'vid', src: `${A}p2/k3-paperplane.mp4`, name: '종이비행기 인트로', by: 'Cinema Studio 4.0 · 13쪽 컨셉 3', chips: [cr(35), '5초 · 720p'], note: '실사 한 겹. 이 영상의 장면(빈 교실, 열린 창문, 파란 하늘, 하얀 종이비행기)을 콘티 프롬프트에 그대로 옮겼어요.', prompt: P.k[2] });
+const bookFinal = () => ({ kind: 'vid', src: `${A}p2/egg-book.mp4`, name: '그림책 버전 · 어린 왕자의 졸업식', by: 'Seedance 2.5 · 콘티 4장', chips: [cr(140), '20초 · 720p · 소리'], note: EGG_NOTE.book.final, prompt: P.eggBook });
+const layFinal = () => ({ kind: 'vid', src: `${A}p2/egg-layered.mp4`, name: '콜라주 버전 · 어린 왕자의 졸업 비행', by: 'Seedance 2.5 · 종이 인형 콘티 4장', chips: [cr(140), '20초 · 720p · 소리'], note: EGG_NOTE.lay.final, prompt: P.eggVideo });
+
+slide('이스터에그 · 어린 왕자의 졸업식', G2, 'part', () => {
+  const i = reg(shotItem(EGG_SHOTS, 2));
+  return `<div class="wrap"><div>
+    <div class="no">${EGGP}</div><h1>어린 왕자의<br>졸업식</h1>
+    <p class="sub">1부의 <b>어린 왕자</b>를 2부 졸업식에 데려왔어요. 같은 주인공으로 20초짜리 두 편을 만들었어요. 수채화 한 겹으로만 그린 <b>그림책 버전</b>, 실사 화면 위에 오려 낸 그림을 얹은 <b>콜라주 버전</b>이에요.</p>
+    <div class="facts"><div class="fact"><b>2</b><span>버전</span></div><div class="fact"><b>12</b><span>콘티 그림</span></div><div class="fact"><b>20초</b><span>한 번에 생성</span></div><div class="fact"><b>292</b><span>크레딧</span></div></div>
+    <div class="promptbox"><div class="top"><span>만든 순서</span></div><pre style="max-height:none;-webkit-mask-image:none;mask-image:none">① 재료 고르기 — 이미 뽑아 둔 그림 캐릭터와 실사 영상
+② 20초를 4장면으로 나누고 콘티 뽑기 — GPT Image 2.6
+③ 콘티를 Seedance 2.5에 넣기 — 장면별 시간표와 카메라
+④ 완성 영상 두 편 확인하기</pre></div>
+  </div><button class="hero card" data-i="${i}"><img src="${A}p2/cut-3.jpg" alt=""><span class="tag dark">콜라주 버전 콘티 3 · GPT Image 2.6</span><span class="zoom">크게 보기</span></button></div>`;
+});
+
+slide('이스터에그 ① 콜라주: 실사 위에 그림 얹기', G2, '', () => {
+  const hero = imgItem(IMG_MODELS[3], { name: '1부의 어린 왕자', by: 'GPT Image 2.6 · 5쪽 모델 비교 결과', pick: 0, note: '그림 한 겹. 이 그림을 참고 이미지로 넣어 콘티의 주인공을 맞췄어요.' });
+  return `${head(EGGP, '', '', pbtn('콘티에 넣은 프롬프트 (콜라주 버전 장면 1)', EGG_SHOTS[0].prompt))}<h2>실사 위에 그림을 얹는 <em>콜라주</em></h2><div class="body"><div class="layers">
+    ${plain(eggPlane(), '', `<div class="txt"><div class="name">실사 한 겹</div><div class="meta">13쪽의 종이비행기 인트로 · Cinema Studio 4.0</div></div>`)}
+    <div class="op">+</div>
+    ${plain(hero, 'tall', `<div class="txt"><div class="name">그림 한 겹</div><div class="meta">5쪽의 어린 왕자 · GPT Image 2.6</div></div>`)}
+    <div class="op">=</div>
+    ${plain(shotItem(EGG_SHOTS, 0), '', `<div class="txt"><div class="name">얹은 한 컷</div><div class="meta">콜라주 버전 콘티 1 · GPT Image 2.6 · 1 크레딧</div></div>`)}
+  </div>${take('새로 만든 재료는 없어요. <b>이미 뽑아 둔 영상과 그림</b>을 참고 자료로 다시 넣었어요. 콘티 프롬프트 첫 줄에 <b>"실사 사진 위에 종이 인형을 얹은 콜라주 한 컷"</b>이라고 적고, 주인공은 <b>"수채화로 그려 가위로 오려 낸 납작한 종이 인형"</b>이라고 못박았어요.')}</div>`;
+});
+
+const boardSlide = (title, h2, list, pTitle, tk) => slide(title, G2, '', () => {
+  const cards = list.map((s, n) => plain(shotItem(list, n), '', `<div class="txt"><div class="row"><span class="name">${n + 1}. ${esc(s.name)}</span></div><div class="note">${esc(s.story)}</div><div class="use">카메라 · ${esc(s.cam)}</div></div>`)).join('');
+  return `${head(EGGP, '주인공 그림 한 장', '장면', pbtn(pTitle, list[2].prompt))}<h2>${h2}</h2><div class="body">
+    <div class="timeline">${list.map(s => `<div><i></i><span>${s.t}</span></div>`).join('')}</div>
+    <div class="grid-4">${cards}</div>${take(tk)}</div>`;
+});
+boardSlide('이스터에그 ② 콘티 · 그림책 버전', '콘티 ① <em>그림책 버전</em> · 20초를 4장면으로', EGG_BOOK_SHOTS, '그림책 버전 장면 3에 넣은 프롬프트',
+  'GPT Image 2.6에 <b>1부 주인공 그림 한 장</b>을 참고 이미지로 넣고 장면만 바꿔 뽑았어요(장당 1 크레딧). 네 장 모두 같은 주인공이고 칠판의 한글도 정확해요. 여우는 프롬프트에 한 줄 적은 것만으로 장면 2~4에 같은 모습으로 나왔어요.');
+boardSlide('이스터에그 ③ 콘티 · 콜라주 버전', '콘티 ② <em>콜라주 버전</em> · 종이비행기에 태우기', EGG_SHOTS, '콜라주 버전 장면 3에 넣은 프롬프트',
+  '같은 주인공 그림을 넣고 이번엔 <b>배경을 실사로</b> 바꿨어요. 교실·하늘·구름은 사진처럼, 어린 왕자는 흰 테두리가 남은 <b>종이 인형</b>으로 얹혔어요. 장면마다 <b>카메라 움직임</b>을 미리 정해 두면 영상 프롬프트를 쓰기 쉬워요.');
+
+slide('이스터에그 ④ Seedance 2.5에 넣기', G2, '', () => {
+  const thumbs = list => list.map((s, n) => { const i = reg(shotItem(list, n)); return `<button class="thumb card" data-i="${i}"><img src="${A}p2/${s.img}.jpg" alt=""><span class="tag dark">${n + 1}</span></button>`; }).join('');
+  const tried = reg({ kind: 'img', src: `${A}p2/lay-3.jpg`, name: '막힌 콘티', by: 'GPT Image 2.6 · 처음 뽑은 콜라주 콘티', chips: [cr(1), '16:9'], note: '실사 화면 속에 입체적으로 그린 아이 캐릭터. 이 콘티로는 Seedance 2.5가 두 번 모두 안전 필터로 생성을 막았어요. 참고 영상을 함께 넣었을 때도, 콘티만 넣었을 때도 같았어요.', prompt: EGG_TRY[2].prompt, tag: '막힘' });
+  const passed = reg(shotItem(EGG_SHOTS, 2));
+  return `${head(EGGP, '모델 · 20초 · 시간표 형식', '넣은 콘티', pbtn('그림책 버전 프롬프트', P.eggBook, '그림책 버전 프롬프트') + copyBtn(P.eggVideo, '콜라주 버전 복사'))}<h2>콘티를 Seedance 2.5에 <em>한 번에</em> 넣어요</h2><div class="body"><div class="split wide">
+    <div class="side"><h3>넣은 것</h3>
+      <p><b>그림책 버전</b> · 콘티 4장</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">${thumbs(EGG_BOOK_SHOTS)}</div>
+      <p><b>콜라주 버전</b> · 종이 인형 콘티 4장</p>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">${thumbs(EGG_SHOTS)}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px"><span class="chip on">Seedance 2.5</span><span class="chip">참고 그림 방식</span><span class="chip">16:9 · 20초 · 720p · 소리</span><span class="chip">편당 140 크레딧</span></div>
+      <h3 style="margin-top:4px">콜라주 버전은 세 번 만에 통과</h3>
+      <div style="display:grid;grid-template-columns:1fr 24px 1fr;gap:8px;align-items:center">
+        <button class="thumb card" data-i="${tried}"><img src="${A}p2/lay-3.jpg" alt=""><span class="tag" style="background:var(--pink);color:#fff">두 번 막힘</span></button><span style="text-align:center;color:var(--lime);font-size:20px">→</span>
+        <button class="thumb card" data-i="${passed}"><img src="${A}p2/cut-3.jpg" alt=""><span class="tag">통과</span></button></div>
+      <p>실사 화면 속의 <b>입체적인 아이 캐릭터</b>는 안전 필터에 걸렸어요. 주인공을 <b>오려 낸 종이 인형</b>으로 바꾸니 통과했어요. 막힌 생성은 환불됐어요.</p></div>
+    <div class="pcard" style="min-height:0"><div class="top"><h3>프롬프트는 네 덩어리 · 콜라주 버전 전문</h3></div>
+      <div class="four"><span><b>1 역할</b> 그림 4장은 순서대로 장면 1~4의 콘티</span><span><b>2 겹</b> 배경은 실사로, 주인공은 끝까지 종이 인형으로</span><span><b>3 시간표</b> [0~5초]처럼 끊고 일어나는 일과 카메라 용어</span><span><b>4 마무리</b> 끊김 없이, 넣지 말 것, 음악과 소리</span></div>
+      <pre style="-webkit-mask-image:none;mask-image:none;overflow:auto;cursor:auto;font-size:14px;line-height:22px">${esc(P.eggVideo)}</pre></div>
+  </div></div>`;
+});
+
+const finaleSlide = (title, h2, item, note, extra) => slide(title, G2, '', () =>
+  `${head(EGGP, '', '', pbtn('Seedance 2.5에 넣은 프롬프트', item.prompt))}<h2>${h2}</h2><div class="body"><div class="finale">
+    ${plain(item, 'big pick', `<div class="txt"><div class="row"><span class="name">${esc(item.name)}</span><span class="meta"><b>140</b> · 20초 · 720p · 누르면 소리와 함께 크게</span></div></div>`)}
+    <div class="side"><h3>결과에서 본 것</h3>${note.points.map(p => `<p>${p}</p>`).join('')}${extra || ''}</div>
+  </div></div>`);
+finaleSlide('이스터에그 ⑤ 완성 · 그림책 버전', '완성 ① <em>그림책 버전</em> · 20초', bookFinal(), EGG_NOTE.book);
+finaleSlide('이스터에그 ⑥ 완성 · 콜라주 버전', '완성 ② <em>콜라주 버전</em> · 20초', layFinal(), EGG_NOTE.lay,
+  `<div class="quote">${EGG_NOTE.compare}</div>`);
+
+// ── 3부 표지
 slide('3부 · 모션 타이포', '3부 모션 타이포', 'part', () => {
   const i = reg(vidItem(TYPO[3], 'p3', P.typo));
   return `<div class="wrap"><div>
@@ -223,11 +296,11 @@ slide('이럴 땐 이 모델', '정리', '', () => {
 
 // ── 20 만든 기록
 slide('만든 기록', '정리', '', () => {
-  const L = [['이미지 46장', 60], ['타이포 영상 12편', 182], ['졸업식 영상 11편', 157], ['인트로 컨셉 4편', 140], ['시작·끝 장면 영상 4편', 72.5]];
-  const line = ([n, v]) => `<div class="line"><span>${n}</span><i><u style="width:${v / 182 * 100}%"></u></i><b>${v}</b></div>`;
+  const L = [['이미지 58장', 72], ['타이포 영상 12편', 182], ['졸업식 영상 11편', 157], ['인트로 컨셉 4편', 140], ['시작·끝 장면 영상 4편', 72.5], ['이스터에그 20초 영상 2편', 280]];
+  const line = ([n, v]) => `<div class="line"><span>${n}</span><i><u style="width:${v / 280 * 100}%"></u></i><b>${v}</b></div>`;
   return `${head('정리', '', '', '<span class="chip">2026. 11. 21. 직접 생성</span>')}<h2>이 샘플러를 <em>만든 기록</em></h2><div class="body"><div class="ledger">
-    <div class="box"><h3>쓴 크레딧</h3><div class="total">612<small>크레딧 · 이미지 46장과 영상 31편</small></div>${L.map(line).join('')}
-      <p style="margin-top:18px;font-size:13px;line-height:20px;color:var(--text-2)">영상이 전체의 90%예요. 이미지는 46장을 만들어도 60 크레딧이라 마음껏 여러 번 뽑아도 돼요. 거부되거나 막힌 생성 7건은 모두 환불됐어요.</p></div>
+    <div class="box"><h3>쓴 크레딧</h3><div class="total">904<small>크레딧 · 이미지 58장과 영상 33편</small></div>${L.map(line).join('')}
+      <p style="margin-top:18px;font-size:13px;line-height:20px;color:var(--text-2)">영상이 전체의 92%예요. 이미지는 58장을 만들어도 72 크레딧이라 마음껏 여러 번 뽑아도 돼요. 거부되거나 막힌 생성 9건은 모두 환불됐어요.</p></div>
     <div class="box"><h3>만들면서 알게 된 것</h3><ul>
       <li><b>유명 작품은 모델에 따라 거부돼요.</b> <span>Seedream 5.5와 5.0 Pro는 책 제목을 빼도 『어린 왕자』 장면을 거부했어요.</span></li>
       <li><b>저작권 오탐도 있어요.</b> <span>빈 교실 사진(Seedance 2.5 Flash)과 학교 항공 장면(Cinema Studio 4.0)이 한 번씩 막혔어요. 문구를 바꾸거나 모델을 바꾸면 돼요.</span></li>
@@ -240,7 +313,11 @@ slide('만든 기록', '정리', '', () => {
 // ── 화면에 올리기
 const stage = $('#stage');
 // 그림은 그 쪽에 들어갈 때(앞뒤 한 쪽 포함) 불러온다
-stage.innerHTML = slides.map((s, n) => `<section class="slide ${s.cls}" data-n="${n + 1}">${s.html.replace(/<img src="/g, '<img data-src="')}</section>`).join('') +
+// 쪽 수와 쪽 범위는 슬라이드를 다 만든 뒤에 채운다 (쪽이 늘어도 번호가 맞도록)
+const firstOf = k => slides.findIndex(s => s.title.startsWith(k)) + 1;
+const rangeOf = g => { const ix = slides.map((s, i) => (s.group === g ? i + 1 : 0)).filter(Boolean); return `${ix[0]}–${ix[ix.length - 1]}`; };
+const fill = h => h.replace(/\{\{n\}\}/g, slides.length).replace(/\{\{r:(.+?)\}\}/g, (_, g) => rangeOf(g));
+stage.innerHTML = slides.map((s, n) => `<section class="slide ${s.cls}" data-n="${n + 1}">${fill(s.html).replace(/<img src="/g, '<img data-src="')}</section>`).join('') +
   `<div class="bar"></div><div class="foot"><span class="where"></span><span class="grow"></span><button class="nav" data-prev title="이전">◀</button><span class="num"></span><button class="nav" data-next title="다음">▶</button><button class="btn ghost" data-toc>목차</button><button class="btn ghost" data-full>전체 화면</button></div><div class="toast"></div>`;
 const els = $$('.slide', stage);
 let now = 0;
@@ -303,7 +380,7 @@ document.addEventListener('click', ev => {
   if (t.dataset.copy !== undefined) return copy(t.dataset.copy === 'lb' ? prompts.lbCopy : prompts[+t.dataset.copy].text);
   if (t.dataset.p !== undefined) return openPrompt(prompts[+t.dataset.p]);
   if (t.dataset.i !== undefined) return openItems(slides[now - 1].items, +t.dataset.i);
-  if (t.dataset.go !== undefined) { closeToc(); closeLb(); return go(+t.dataset.go); }
+  if (t.dataset.go !== undefined) { closeToc(); closeLb(); const g = t.dataset.go; return go(/^\d+$/.test(g) ? +g : firstOf(g)); }
   if (t.dataset.tocClose !== undefined) return closeToc();
   if (t.dataset.toc !== undefined) return openToc();
   if (t.dataset.prev !== undefined) return go(now - 1);

@@ -293,3 +293,30 @@ h2 em { font-style: normal; color: var(--lime); }
 .four span { font-size: 13.5px; line-height: 20px; color: var(--text-2); }
 .four b { color: var(--lime); font-weight: 600; margin-right: 6px; }
 .head .btn + .btn { margin-left: 0; }
+
+/* 내려받기 · 영상 확장 */
+a.btn { text-decoration: none; }
+.lb .info a.btn { align-self: flex-start; }
+.grid-8 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 14px; }
+.grid-8 .media { aspect-ratio: 16 / 9; }
+.grid-8 .txt { padding: 9px 12px 10px; }
+.grid-8 .row { display: flex; align-items: baseline; gap: 8px; }
+.grid-8 .row .meta { margin-left: auto; white-space: nowrap; color: var(--lime); }
+.grid-8 .name { font-size: 15.5px; }
+.extflow { display: grid; grid-template-columns: 1fr 20px 1fr 20px 1fr; gap: 6px; align-items: center; }
+.extflow > span { text-align: center; color: var(--lime); font-size: 18px; }
+.extflow .thumb { position: relative; display: block; border-radius: 10px; overflow: hidden; }
+.dlgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; flex: 1; min-height: 0; align-content: start; }
+.dlcard { background: var(--surface-3); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+.dlcard .card { border-radius: 0; }
+.dlcard .media { aspect-ratio: 16 / 9; }
+.dlcard .txt { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.dlcard h3 { font-size: 20px; line-height: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.dlcard p { font-size: 14.5px; line-height: 22px; color: var(--text-2); }
+.dlcard p b { color: var(--text); font-weight: 500; }
+.dlcard .row { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 6px; }
+.dlcard .row .meta { font-size: 13px; color: var(--text-2); }
+.dlcard.wide .txt { padding: 16px 18px; }
+.card.dim .media img { opacity: .45; filter: saturate(.6); }
+.card.dim .tag { background: var(--pink); color: #fff; }
+.grid-8 .card.dim .meta { color: var(--pink); }

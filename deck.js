@@ -26,6 +26,9 @@ const plain = (it, cls = '', extra = '') => { const i = reg(it); return `<button
 const prompts = [];
 const pbtn = (title, text, label = '프롬프트 보기') => { prompts.push({ title, text }); return `<button class="btn ghost" data-p="${prompts.length - 1}">${label}</button>`; };
 const copyBtn = (text, label = '복사') => { prompts.push({ title: '', text }); return `<button class="btn primary" data-copy="${prompts.length - 1}">${label}</button>`; };
+// 내려받기: 파일 이름을 한글로 붙여 준다
+const fileName = it => `힉스필드샘플러_${String(it.dl || it.name).replace(/[\/:*?"<>|·]/g, ' ').trim().replace(/\s+/g, '-')}.${it.kind === 'vid' ? 'mp4' : 'jpg'}`;
+const dlBtn = (it, label, cls = 'primary') => `<a class="btn ${cls}" href="${it.src}" download="${fileName(it)}">${label}</a>`;
 const head = (part, fixed, changed, right = '') => `<div class="head"><span class="pill">${part}</span>${fixed ? `<span class="chip">고정 · ${fixed}</span>` : ''}${changed ? `<span class="chip on">바꾼 것 · ${changed}</span>` : ''}<span class="grow"></span>${right}</div>`;
 const take = html => `<div class="take"><span>${html}</span></div>`;
 
@@ -161,12 +164,13 @@ slide('이스터에그 · 어린 왕자의 졸업식', G2, 'part', () => {
   const i = reg(shotItem(EGG_SHOTS, 2));
   return `<div class="wrap"><div>
     <div class="no">${EGGP}</div><h1>어린 왕자의<br>졸업식</h1>
-    <p class="sub">1부의 <b>어린 왕자</b>를 2부 졸업식에 데려왔어요. 같은 주인공으로 20초짜리 두 편을 만들었어요. 수채화 한 겹으로만 그린 <b>그림책 버전</b>, 실사 화면 위에 오려 낸 그림을 얹은 <b>콜라주 버전</b>이에요.</p>
-    <div class="facts"><div class="fact"><b>2</b><span>버전</span></div><div class="fact"><b>12</b><span>콘티 그림</span></div><div class="fact"><b>20초</b><span>한 번에 생성</span></div><div class="fact"><b>292</b><span>크레딧</span></div></div>
+    <p class="sub">1부의 <b>어린 왕자</b>를 2부 졸업식에 데려왔어요. 같은 주인공으로 20초짜리 두 편을 만들고, 마무리를 더해 1분 영상으로 이었어요. 수채화 한 겹으로만 그린 <b>그림책 버전</b>, 실사 화면 위에 오려 낸 그림을 얹은 <b>콜라주 버전</b>이에요.</p>
+    <div class="facts"><div class="fact"><b>3</b><span>완성 영상</span></div><div class="fact"><b>21</b><span>콘티 그림</span></div><div class="fact"><b>1분</b><span>가장 긴 영상</span></div><div class="fact"><b>441</b><span>크레딧</span></div></div>
     <div class="promptbox"><div class="top"><span>만든 순서</span></div><pre style="max-height:none;-webkit-mask-image:none;mask-image:none">① 재료 고르기 — 이미 뽑아 둔 그림 캐릭터와 실사 영상
 ② 20초를 4장면으로 나누고 콘티 뽑기 — GPT Image 2.6
 ③ 콘티를 Seedance 2.5에 넣기 — 장면별 시간표와 카메라
-④ 완성 영상 두 편 확인하기</pre></div>
+④ 완성 영상 확인하기
+⑤ 마무리 구간을 더 만들어 1분으로 잇기</pre></div>
   </div><button class="hero card" data-i="${i}"><img src="${A}p2/cut-3.jpg" alt=""><span class="tag dark">콜라주 버전 콘티 3 · GPT Image 2.6</span><span class="zoom">크게 보기</span></button></div>`;
 });
 
@@ -215,13 +219,55 @@ slide('이스터에그 ④ Seedance 2.5에 넣기', G2, '', () => {
 });
 
 const finaleSlide = (title, h2, item, note, extra) => slide(title, G2, '', () =>
-  `${head(EGGP, '', '', pbtn('Seedance 2.5에 넣은 프롬프트', item.prompt))}<h2>${h2}</h2><div class="body"><div class="finale">
+  `${head(EGGP, '', '', dlBtn(item, '영상 내려받기') + pbtn('Seedance 2.5에 넣은 프롬프트', item.prompt))}<h2>${h2}</h2><div class="body"><div class="finale">
     ${plain(item, 'big pick', `<div class="txt"><div class="row"><span class="name">${esc(item.name)}</span><span class="meta"><b>140</b> · 20초 · 720p · 누르면 소리와 함께 크게</span></div></div>`)}
     <div class="side"><h3>결과에서 본 것</h3>${note.points.map(p => `<p>${p}</p>`).join('')}${extra || ''}</div>
   </div></div>`);
 finaleSlide('이스터에그 ⑤ 완성 · 그림책 버전', '완성 ① <em>그림책 버전</em> · 20초', bookFinal(), EGG_NOTE.book);
 finaleSlide('이스터에그 ⑥ 완성 · 콜라주 버전', '완성 ② <em>콜라주 버전</em> · 20초', layFinal(), EGG_NOTE.lay,
   `<div class="quote">${EGG_NOTE.compare}</div>`);
+
+// ── 이스터에그 이어서: 영상 확장으로 20초를 1분으로
+const minFinal = () => ({ kind: 'vid', src: `${A}p2/egg-1min.mp4`, name: '1분 졸업 축하 영상 · 어린 왕자의 졸업식', dl: '어린왕자 졸업 축하 영상 1분', by: 'Seedance 2.5 · 20초 세 편을 이어 붙임', chips: [cr(420), '60초 · 720p · 소리'], note: EGG_NOTE.min.final, prompt: `【처음 20초】\n${P.eggVideo}\n\n【확장 ① 20~40초】\n${P.ext1}\n\n【확장 ② 40~60초】\n${P.ext2}` });
+
+slide('이스터에그 ⑦ 콘티 · 이어질 8장면', G2, '', () => {
+  const cards = EGG_EXT_SHOTS.map((s, n) => {
+    const it = shotItem(EGG_EXT_SHOTS, n);
+    it.name = `장면 ${n + 5} · ${s.name}`;
+    if (n < 4) { it.tag = '막힘'; it.chips = [cr(1), '16:9 · 품질 중간']; it.note = `${s.story} 이 장면이 든 구간은 영상으로 만들어지지 않았어요.`; }
+    return plain(it, n < 4 ? 'dim' : 'pick', `<div class="txt"><div class="row"><span class="name">${n + 5}. ${esc(s.name)}</span><span class="meta">${n < 4 ? '영상으로는 막힘' : esc(s.cam)}</span></div></div>`);
+  }).join('');
+  return `${head(EGGP, '콜라주 방식 · 종이 인형', '장면', pbtn('장면 10에 넣은 프롬프트', EGG_EXT_SHOTS[5].prompt))}<h2>콘티 ③ <em>이어질 8장면</em> · 1분을 향해</h2><div class="body">
+    <div class="grid-8">${cards}</div>
+    ${take('콜라주 버전의 끝(장미가 있는 별)에서 이어지게 <b>8장면</b>을 더 짰어요. 콘티 그림은 여덟 장 모두 잘 나왔지만, 영상으로는 <b>아래 네 장면(9~12)만 통과</b>했어요. 위 네 장면은 여러 번 넣어도 막혀서 완성 영상에는 들어가지 못했어요.')}</div>`;
+});
+
+slide('이스터에그 ⑧ 20초 세 편을 이어 1분', G2, '', () => {
+  const a = reg(bookFinal()), b = reg(layFinal());
+  const c = reg({ kind: 'img', src: `${A}p2/cut-12.jpg`, name: '마무리 구간 (40~60초)', by: 'Seedance 2.5 · 콘티 장면 9~12', chips: [cr(140), '20초 · 720p · 소리'], note: '새로 만든 마무리 20초. 종이비행기와 학사모가 별이 되고, 밤의 교실 칠판으로 돌아와요.', prompt: P.seg3 });
+  const x = reg({ kind: 'img', src: `${A}p2/cut-6x.jpg`, name: '막힌 장면', by: 'GPT Image 2.6 · 처음 짠 장면 6', chips: [cr(1), '16:9'], note: EGG_NOTE.blocked, tag: '막힘' });
+  return `${head(EGGP, '모델 · 20초 · 콘티 4장씩', '구간', copyBtn(P.seg3, '마무리 구간 복사'))}<h2>20초 <em>세 편</em>을 이어 1분으로</h2><div class="body"><div class="split wide">
+    <div class="side"><h3>20초 + 20초 + 20초</h3>
+      <div class="extflow">
+        <button class="thumb card" data-i="${a}"><img src="${A}p2/egg-2.jpg" alt=""><span class="tag dark">0–20초 · 그림책</span></button>
+        <span>+</span><button class="thumb card" data-i="${b}"><img src="${A}p2/cut-3.jpg" alt=""><span class="tag dark">20–40초 · 콜라주</span></button>
+        <span>+</span><button class="thumb card" data-i="${c}"><img src="${A}p2/cut-12.jpg" alt=""><span class="tag">40–60초 · 마무리</span></button></div>
+      ${EGG_NOTE.ext.map(p => `<p>${p}</p>`).join('')}
+      <div style="display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center"><button class="thumb card" data-i="${x}"><img src="${A}p2/cut-6x.jpg" alt=""><span class="tag" style="background:var(--pink);color:#fff">막힌 장면</span></button><p style="margin:0">${EGG_NOTE.blocked}</p></div></div>
+    <div class="pcard" style="min-height:0"><div class="top"><h3>마무리 구간에 넣은 프롬프트 전문 (40~60초)</h3></div>
+      <div class="four"><span><b>1 같은 머리말</b> 콜라주 방식과 종이 인형 설명을 앞 구간과 똑같이</span><span><b>2 콘티</b> 그 구간의 장면 4장을 참고 그림으로</span><span><b>3 시간표</b> 구간 안에서 다시 0초부터 적기</span><span><b>4 이음새</b> 앞 구간의 끝 장면에서 시작하게 짜기</span></div>
+      <pre style="-webkit-mask-image:none;mask-image:none;overflow:auto;cursor:auto;font-size:14px;line-height:22px">${esc(P.seg3)}</pre></div>
+  </div></div>`;
+});
+
+slide('이스터에그 ⑨ 완성 · 1분 졸업 축하 영상', G2, '', () => {
+  const item = minFinal();
+  return `${head(EGGP, '', '', dlBtn(item, '1분 영상 내려받기') + pbtn('세 번에 걸쳐 넣은 프롬프트', item.prompt))}<h2>완성 ③ <em>1분</em> 졸업 축하 영상</h2><div class="body"><div class="finale">
+    ${plain(item, 'big pick', `<div class="txt"><div class="row"><span class="name">어린 왕자의 졸업식 · 1분</span><span class="meta"><b>420</b> · 60초 · 720p · 누르면 소리와 함께 크게</span></div></div>`)}
+    <div class="side"><h3>결과에서 본 것</h3>${EGG_NOTE.min.points.map(p => `<p>${p}</p>`).join('')}
+      <div class="quote">졸업식에서 바로 틀 수 있게 내려받기 단추를 달았어요. 오른쪽 위 <b style="color:var(--lime)">1분 영상 내려받기</b>를 누르세요.</div></div>
+  </div></div>`;
+});
 
 // ── 3부 표지
 slide('3부 · 모션 타이포', '3부 모션 타이포', 'part', () => {
@@ -262,7 +308,7 @@ slide('글꼴까지 맞추려면: 시작·끝 장면', '3부 모션 타이포', 
 // ── 18 프롬프트 모음
 slide('프롬프트 모음', '정리', '', () => {
   const pc = (t, w, text) => { const b = copyBtn(text); prompts.push({ title: t, text }); return `<div class="pcard"><div class="top"><h3>${t}</h3>${b}</div><div class="where">${w}</div><pre data-p="${prompts.length - 1}">${esc(text)}</pre></div>`; };
-  return `${head('정리', '', '', '<span class="chip">글을 누르면 전체가 열려요</span>')}<h2>바로 쓰는 <em>프롬프트</em> 6개</h2><div class="body"><div class="prompts">
+  return `${head('정리', '', '', '<span class="chip">글을 누르면 전체가 열려요</span><button class="btn primary" data-dltxt>전체 내려받기</button>')}<h2>바로 쓰는 <em>프롬프트</em> 6개</h2><div class="body"><div class="prompts">
     ${pc('① 동화책 삽화', '이미지 모델 · 3:4', P.img)}
     ${pc('② 그림체만 바꾸기', '이미지 모델 · [그림체] 줄만 교체', P.style(5))}
     ${pc('③ 같은 주인공으로 다음 쪽', '이미지 모델 · 1쪽을 참고 이미지로 첨부', P.pageRef(1))}
@@ -294,13 +340,26 @@ slide('이럴 땐 이 모델', '정리', '', () => {
   </div></div>`;
 });
 
+// ── 자료 내려받기
+slide('자료 내려받기', '정리', '', () => {
+  const v = (it, t, d, size) => `<div class="dlcard"><button class="card" data-i="${reg(it)}">${media(it)}</button><div class="txt"><h3>${t}</h3><p>${d}</p><div class="row">${dlBtn(it, '내려받기')}<span class="meta">${size}</span></div></div></div>`;
+  return `${head('정리', '', '', '<span class="chip">수업과 학교 행사용</span>')}<h2>자료 <em>내려받기</em></h2><div class="body"><div class="dlgrid">
+    ${v(minFinal(), '1분 졸업 축하 영상', '그림책 20초 + 콜라주 20초 + 마무리 20초', 'mp4 · 60초 · 720p')}
+    ${v(layFinal(), '콜라주 버전 20초', '종이비행기를 타고 별까지', 'mp4 · 20초 · 720p')}
+    ${v(bookFinal(), '그림책 버전 20초', '수채화로 그린 졸업식', 'mp4 · 20초 · 720p')}
+    <div class="dlcard wide"><div class="txt"><h3>졸업 영상 묶음</h3><p>영상 3편과 콘티 그림 16장을 한 번에.</p><div class="row"><a class="btn primary" href="${A}dl/graduation-pack.zip" download="어린왕자-졸업영상-묶음.zip">묶음 내려받기</a><span class="meta">zip · 47MB</span></div></div></div>
+    <div class="dlcard wide"><div class="txt"><h3>프롬프트 전체</h3><p>이 샘플러에 실제로 넣은 프롬프트를 글 파일 하나로.</p><div class="row"><button class="btn primary" data-dltxt>프롬프트 내려받기</button><span class="meta">txt</span></div></div></div>
+    <div class="dlcard wide"><div class="txt"><h3>그림과 영상 하나씩</h3><p>어느 쪽에서든 그림이나 영상을 눌러 크게 연 뒤, 오른쪽의 <b>내려받기</b> 단추를 누르면 그 파일만 받을 수 있어요.</p></div></div>
+  </div>${take('영상과 그림은 모두 이 샘플러를 위해 직접 생성한 것이에요. 수업과 학교 행사에서 쓰시도록 내려받기를 열어 두었어요.')}</div>`;
+});
+
 // ── 20 만든 기록
 slide('만든 기록', '정리', '', () => {
-  const L = [['이미지 58장', 72], ['타이포 영상 12편', 182], ['졸업식 영상 11편', 157], ['인트로 컨셉 4편', 140], ['시작·끝 장면 영상 4편', 72.5], ['이스터에그 20초 영상 2편', 280]];
-  const line = ([n, v]) => `<div class="line"><span>${n}</span><i><u style="width:${v / 280 * 100}%"></u></i><b>${v}</b></div>`;
+  const L = [['이미지 67장', 81], ['타이포 영상 12편', 182], ['졸업식 영상 11편', 157], ['인트로 컨셉 4편', 140], ['시작·끝 장면 영상 4편', 72.5], ['이스터에그 20초 영상 3편', 420]];
+  const line = ([n, v]) => `<div class="line"><span>${n}</span><i><u style="width:${v / 420 * 100}%"></u></i><b>${v}</b></div>`;
   return `${head('정리', '', '', '<span class="chip">2026. 11. 21. 직접 생성</span>')}<h2>이 샘플러를 <em>만든 기록</em></h2><div class="body"><div class="ledger">
-    <div class="box"><h3>쓴 크레딧</h3><div class="total">904<small>크레딧 · 이미지 58장과 영상 33편</small></div>${L.map(line).join('')}
-      <p style="margin-top:18px;font-size:13px;line-height:20px;color:var(--text-2)">영상이 전체의 92%예요. 이미지는 58장을 만들어도 72 크레딧이라 마음껏 여러 번 뽑아도 돼요. 거부되거나 막힌 생성 9건은 모두 환불됐어요.</p></div>
+    <div class="box"><h3>쓴 크레딧</h3><div class="total">1,053<small>크레딧 · 이미지 67장과 영상 34편</small></div>${L.map(line).join('')}
+      <p style="margin-top:18px;font-size:13px;line-height:20px;color:var(--text-2)">영상이 전체의 92%예요. 이미지는 67장을 만들어도 81 크레딧이라 마음껏 여러 번 뽑아도 돼요. 거부되거나 막힌 생성 15건은 모두 환불됐어요.</p></div>
     <div class="box"><h3>만들면서 알게 된 것</h3><ul>
       <li><b>유명 작품은 모델에 따라 거부돼요.</b> <span>Seedream 5.5와 5.0 Pro는 책 제목을 빼도 『어린 왕자』 장면을 거부했어요.</span></li>
       <li><b>저작권 오탐도 있어요.</b> <span>빈 교실 사진(Seedance 2.5 Flash)과 학교 항공 장면(Cinema Studio 4.0)이 한 번씩 막혔어요. 문구를 바꾸거나 모델을 바꾸면 돼요.</span></li>
@@ -354,7 +413,7 @@ function showItem() {
   lb.innerHTML = `<div class="lb"><div class="view">${view}${lbItems.length > 1 ? `<span class="chip count">${lbAt + 1} / ${lbItems.length}</span><button class="step prev" data-step="-1">◀</button><button class="step next" data-step="1">▶</button>` : ''}</div>
     <div class="info"><button class="x" data-close title="닫기">✕</button><div class="by">${esc(it.by || '')}</div><h3>${esc(it.name)}</h3>
     <div class="chips">${it.pick ? '<span class="chip on">추천</span>' : ''}${(it.chips || []).map(c => `<span class="chip">${esc(c)}</span>`).join('')}</div>
-    ${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}${it.use ? `<div class="use">→ ${esc(it.use)}</div>` : ''}
+    ${it.refused ? '' : `<div>${dlBtn(it, it.kind === 'vid' ? '영상 내려받기' : '그림 내려받기', 'ghost')}</div>`}${it.note ? `<div class="note">${esc(it.note)}</div>` : ''}${it.use ? `<div class="use">→ ${esc(it.use)}</div>` : ''}
     ${it.prompt ? `<div class="ptitle"><span>넣은 프롬프트</span><span class="grow"></span><button class="btn primary" data-copy="lb">복사</button></div><pre>${esc(it.prompt)}</pre>` : ''}</div></div>`;
 }
 function openItems(items, at) { lbItems = items; lbAt = at; playVideos(els[now - 1], false); lb.hidden = false; showItem(); }
@@ -367,6 +426,41 @@ const toc = $('#toc');
 function openToc() { toc.hidden = false; toc.innerHTML = `<div class="tocbox"><button class="x lbx" data-toc-close style="position:absolute;right:18px;top:18px;width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.08)">✕</button><h3>목차</h3><div class="tocgrid">${slides.map((s, i) => `<button data-go="${i + 1}" class="${i + 1 === now ? 'now' : ''}"><span class="n">${String(i + 1).padStart(2, '0')}</span><span class="t">${s.title.replace(/<[^>]+>/g, '')}</span><span class="g">${esc(s.group)}</span></button>`).join('')}</div></div>`; }
 function closeToc() { toc.hidden = true; toc.innerHTML = ''; }
 
+// 프롬프트 전체를 글 파일로 내려받기
+function promptsText() {
+  const sec = (t, body) => `■ ${t}\n${body}\n`;
+  const shots = (t, list, first = 1) => list.map((s, n) => sec(`${t} · 장면 ${n + first} (${s.t}) ${s.name}`, s.prompt)).join('\n');
+  return [
+    '힉스필드 모델 샘플러 · 실제로 넣은 프롬프트 (2026. 11. 21.)\n',
+    '【1부 동화책 삽화】',
+    sec('모델 비교 (이미지 모델 16종에 똑같이)', P.img),
+    sec('그림체만 바꾸기 (예: 한국 민화)', P.style(5)),
+    sec('같은 주인공으로 다음 쪽 (1쪽을 참고 이미지로 첨부)', P.pageRef(1)),
+    '【2부 졸업식 인트로】',
+    sec('시작 이미지', P.start),
+    sec('움직임 한 줄 (영상 모델 12종에 똑같이)', P.move),
+    ...P.k.map((p, n) => sec(`인트로 컨셉 ${n + 1}`, p)),
+    '【이스터에그 · 어린 왕자의 졸업식】',
+    shots('그림책 버전 콘티', EGG_BOOK_SHOTS),
+    sec('그림책 버전 영상 (Seedance 2.5 · 20초)', P.eggBook),
+    shots('콜라주 버전 콘티', EGG_SHOTS),
+    sec('콜라주 버전 영상 (Seedance 2.5 · 20초)', P.eggVideo),
+    shots('마무리 구간 콘티', EGG_EXT_SHOTS.slice(4), 9),
+    sec('1분 영상의 마무리 구간 (40~60초)', P.seg3),
+    '【3부 모션 타이포】',
+    sec('글만으로 (영상 모델 12종에 똑같이)', P.typo),
+    sec('시작 장면 이미지', P.startImg),
+    sec('끝 장면 이미지', P.endImg),
+    sec('시작·끝 장면과 함께 넣은 움직임', P.se),
+  ].join('\n');
+}
+function downloadText(name, text) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + text.replace(/\n/g, '\r\n')], { type: 'text/plain;charset=utf-8' }));
+  a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast('내려받았어요');
+}
 function toast(t) { const el = $('.toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 1400); }
 async function copy(text) {
   try { await navigator.clipboard.writeText(text); }
@@ -375,8 +469,9 @@ async function copy(text) {
 }
 
 document.addEventListener('click', ev => {
-  const t = ev.target.closest('[data-copy],[data-p],[data-i],[data-go],[data-toc],[data-toc-close],[data-prev],[data-next],[data-full],[data-close],[data-step]');
+  const t = ev.target.closest('[data-dltxt],[data-copy],[data-p],[data-i],[data-go],[data-toc],[data-toc-close],[data-prev],[data-next],[data-full],[data-close],[data-step]');
   if (!t) { if (ev.target === lb || ev.target === toc) { closeLb(); closeToc(); } return; }
+  if (t.dataset.dltxt !== undefined) return downloadText('힉스필드샘플러_프롬프트.txt', promptsText());
   if (t.dataset.copy !== undefined) return copy(t.dataset.copy === 'lb' ? prompts.lbCopy : prompts[+t.dataset.copy].text);
   if (t.dataset.p !== undefined) return openPrompt(prompts[+t.dataset.p]);
   if (t.dataset.i !== undefined) return openItems(slides[now - 1].items, +t.dataset.i);
